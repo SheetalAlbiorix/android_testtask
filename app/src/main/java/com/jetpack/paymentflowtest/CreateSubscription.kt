@@ -22,15 +22,21 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.CreditCard
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.MonetizationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -53,13 +59,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -77,9 +82,12 @@ fun CreateSubscription(
 
     var amount by remember { mutableStateOf("0") }
     var showDatePicker by remember { mutableStateOf(false) }
+    var showFrequencyPicker by remember { mutableStateOf(false) }
     var showCategoryPicker by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf("Apr 12, 2025") }
     var selectedFrequency by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf<CategoryItem?>(null) }
+    var isSubscriptionActive by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -269,9 +277,18 @@ fun CreateSubscription(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        DollarCurrencyTextField(
-                            value = amount,
-                            onValueChange = { amount = it },
+                        Text(
+                            text = "$0",
+                            style = TextStyle(
+                                color = Color(0xFF212121),
+                                fontSize = 16.sp,
+                                lineHeight = 22.sp,
+                                letterSpacing = 0.sp,
+                                fontWeight = FontWeight.W400,
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            textDecoration = TextDecoration.Underline
                         )
                     }
                     //endregion
@@ -296,19 +313,46 @@ fun CreateSubscription(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        Row {
-                            Text(
-                                text = "Choose a category",
-                                style = TextStyle(
-                                    color = Color(0xFF98A2B3),
-                                    fontSize = 16.sp,
-                                    lineHeight = 22.sp,
-                                    letterSpacing = 0.sp,
-                                    fontWeight = FontWeight.W400,
-                                ),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
+                        Row(
+                            modifier = Modifier.clickable {
+                                showCategoryPicker = true
+                            }
+                        ) {
+                            if (selectedCategory != null) {
+                                selectedCategory?.imageVector?.let {
+                                    Icon(
+                                        it,
+                                        contentDescription = selectedCategory?.label
+                                    )
+                                }
+                                selectedCategory?.label?.let {
+                                    Text(
+                                        text = it,
+                                        style = TextStyle(
+                                            color = Color(0xFF212121),
+                                            fontSize = 16.sp,
+                                            lineHeight = 22.sp,
+                                            letterSpacing = 0.sp,
+                                            fontWeight = FontWeight.W400,
+                                        ),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    text = "Choose a category",
+                                    style = TextStyle(
+                                        color = Color(0xFF98A2B3),
+                                        fontSize = 16.sp,
+                                        lineHeight = 22.sp,
+                                        letterSpacing = 0.sp,
+                                        fontWeight = FontWeight.W400,
+                                    ),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
                             Spacer(Modifier.width(4.dp))
                             Icon(
                                 Icons.Rounded.Code,
@@ -384,7 +428,7 @@ fun CreateSubscription(
                             .fillMaxWidth()
                             .height(60.dp)
                             .padding(horizontal = 20.dp)
-                            .clickable { showCategoryPicker = true },
+                            .clickable { showFrequencyPicker = true },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -447,8 +491,10 @@ fun CreateSubscription(
                             overflow = TextOverflow.Ellipsis
                         )
                         Switch(
-                            checked = false,
-                            onCheckedChange = { },
+                            checked = isSubscriptionActive,
+                            onCheckedChange = {
+                                isSubscriptionActive = it
+                            },
                             colors = SwitchDefaults.colors(
                                 checkedThumbColor = Color.White,
                                 uncheckedThumbColor = Color(0xFF002FFF),
@@ -490,10 +536,21 @@ fun CreateSubscription(
         )
     }
 
-    if (showCategoryPicker) {
+    if (showFrequencyPicker) {
         FrequencyPickerBottomSheet(
+            selectedFrequency = selectedFrequency,
             frequencySelected = {
                 selectedFrequency = it
+            },
+            onDismiss = { showFrequencyPicker = false }
+        )
+    }
+
+    if (showCategoryPicker) {
+        CategoryPickerBottomSheet(
+            selectedCategory = selectedCategory,
+            categorySelected = {
+                selectedCategory = it
             },
             onDismiss = { showCategoryPicker = false }
         )
@@ -516,70 +573,6 @@ private fun OutlinedIconButton(
         contentAlignment = Alignment.Center
     ) {
         content()
-    }
-}
-
-@Composable
-fun DollarCurrencyTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val minChars = 1
-    val charCount = maxOf(value.length, minChars)
-    val width = (charCount * 12).dp
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "$",
-            style = TextStyle(
-                color = Color(0xFF212121),
-                fontSize = 16.sp,
-                lineHeight = 22.sp,
-                letterSpacing = 0.sp,
-                fontWeight = FontWeight.W400,
-            ),
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-        )
-        BasicTextField(
-            value = value,
-            onValueChange = { new ->
-                // Allow only digits and one dot, limit to 2 decimals
-                val filtered = new
-                    .replace("[^0-9.]".toRegex(), "")
-                    .let {
-                        if (!it.contains('.')) it
-                        else {
-                            val parts = it.split('.', limit = 2)
-                            parts[0] + "." + parts.getOrNull(1).orEmpty().take(2)
-                        }
-                    }
-                onValueChange(filtered)
-            },
-            modifier = modifier.width(width),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            singleLine = true,
-            decorationBox = { innerTextField ->
-                Column(
-                    Modifier
-                ) {
-                    innerTextField()
-                    // The underline
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .background(Color(0xFF212121))
-                    )
-                }
-            }
-        )
     }
 }
 
@@ -658,7 +651,7 @@ fun DatePickerBottomSheet(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
 
-                WheelDatePicker { snappedDate ->
+                WheelDatePicker(modifier = Modifier.fillMaxWidth()) { snappedDate ->
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         selectedMonth = snappedDate.monthValue
                         selectedDay = snappedDate.dayOfMonth
@@ -675,10 +668,11 @@ fun DatePickerBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FrequencyPickerBottomSheet(
+    selectedFrequency: String,
     frequencySelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var frequency by remember { mutableStateOf("") }
+    var frequency by remember { mutableStateOf(selectedFrequency) }
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = Color.White,
@@ -733,7 +727,8 @@ fun FrequencyPickerBottomSheet(
             label = "Weekly",
             modifier = Modifier.clickable {
                 frequency = "Weekly"
-            }
+            },
+            isChecked = frequency == "Weekly"
         )
 
         Divider(
@@ -746,7 +741,8 @@ fun FrequencyPickerBottomSheet(
             label = "Monthly",
             modifier = Modifier.clickable {
                 frequency = "Monthly"
-            }
+            },
+            isChecked = frequency == "Monthly"
         )
 
         Divider(
@@ -759,31 +755,163 @@ fun FrequencyPickerBottomSheet(
             label = "Annually",
             modifier = Modifier.clickable {
                 frequency = "Annually"
-            }
+            },
+            isChecked = frequency == "Annually"
         )
 
         Spacer(Modifier.height(24.dp))
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeatureRow(modifier: Modifier = Modifier, icon: Painter? = null, label: String) {
+fun CategoryPickerBottomSheet(
+    selectedCategory: CategoryItem?,
+    categorySelected: (CategoryItem?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var category by remember { mutableStateOf(selectedCategory) }
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = Color.White,
+        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .padding(top = 12.dp)
+                    .width(36.dp)
+                    .height(5.dp)
+                    .background(Color(0xFFE0E0E0), RoundedCornerShape(2.5.dp))
+            )
+        }
+    ) {
+        val categoryList = listOf(
+            CategoryItem(
+                imageVector = Icons.Rounded.Cached,
+                label = "Subscription",
+            ), CategoryItem(
+                imageVector = Icons.Rounded.Build,
+                label = "Utility",
+            ), CategoryItem(
+                imageVector = Icons.Rounded.CreditCard,
+                label = "Card Payment",
+            ), CategoryItem(
+                imageVector = Icons.Rounded.MonetizationOn,
+                label = "Loan",
+            ), CategoryItem(
+                imageVector = Icons.Rounded.Home,
+                label = "Rent",
+            )
+        )
+        // Header
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp),
+            contentAlignment = Alignment.CenterStart // default alignment to start (left)
+        ) {
+            Text(
+                text = "Frequency",
+                modifier = Modifier.fillMaxWidth(),
+                style = TextStyle(
+                    color = Color(0xFF212121),
+                    fontSize = 18.sp,
+                    lineHeight = 26.sp,
+                    letterSpacing = 0.sp,
+                    fontWeight = FontWeight.Medium,
+                ),
+                textAlign = TextAlign.Center
+            )
+            TextButton(
+                onClick = {
+                    categorySelected(category)
+                    onDismiss()
+                },
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
+                Text(
+                    "Done",
+                    color = Color(0xFF0066FF),
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+
+        // Features List
+        LazyColumn(state = rememberLazyListState(), modifier = Modifier.fillMaxWidth()) {
+            itemsIndexed(items = categoryList) { index, item ->
+                FeatureRow(
+                    isChecked = item.label == category?.label,
+                    icon = item.imageVector,
+                    label = item.label,
+                    modifier = Modifier.clickable {
+                        category = item
+                    }
+                )
+                if (index != categoryList.size - 1) {
+                    Divider(
+                        thickness = 1.dp,
+                        color = Color(0xFFE3E6EB),
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.height(24.dp))
+    }
+}
+
+data class CategoryItem(
+    val imageVector: ImageVector,
+    val label: String,
+)
+
+@Composable
+fun FeatureRow(
+    isChecked: Boolean = false,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    label: String
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color(0xFF1C1E22),
-            modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            icon?.let {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFF2F4F7))
+                ) {
+                    Icon(
+                        it,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .align(Alignment.Center)
+                            .padding(5.dp),
+                        tint = Color(0xFF212121)
+                    )
+                }
+            }
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color(0xFF1C1E22),
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
+            )
+        }
         Box(
             modifier = Modifier.padding(end = 16.dp)
         ) {
             CommonCheckbox(
-                isChecked = true,
+                isChecked = isChecked,
             )
         }
     }
@@ -803,13 +931,8 @@ fun CommonCheckbox(
     Box(
         modifier = Modifier
             .size(size.dp)
-            .background(color = checkboxColor, shape = RoundedCornerShape(6.dp))
-            .heightIn(24.dp)
-            .border(
-                width = 1.5.dp,
-                color = Color(0xFF002FFF),
-                shape = CircleShape
-            ),
+            .background(color = checkboxColor, shape = CircleShape)
+            .heightIn(24.dp),
         contentAlignment = Alignment.Center
     ) {
         Column {
