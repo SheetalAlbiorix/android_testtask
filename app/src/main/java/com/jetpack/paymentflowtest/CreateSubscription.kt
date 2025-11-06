@@ -1,8 +1,16 @@
 package com.jetpack.paymentflowtest
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,21 +27,24 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.CreditCard
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.MonetizationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +52,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -71,17 +83,14 @@ fun CreateSubscription(onClose: () -> Unit) {
     var serviceImage by remember { mutableStateOf("") }
     var serviceAmount by remember { mutableStateOf("0") }
 
-    var selectedCategory by remember { mutableStateOf("") }
     var selectedDate by remember { mutableStateOf(Date()) }
     var selectedFrequency by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf<CategoryItem?>(null) }
 
     var showServicePicker by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showFrequencyPicker by remember { mutableStateOf(false) }
     var showCategoryPicker by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf("Apr 12, 2025") }
-    var selectedFrequency by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf<CategoryItem?>(null) }
     var isSubscriptionActive by remember { mutableStateOf(false) }
 
     Box(
@@ -290,7 +299,7 @@ fun CreateSubscription(onClose: () -> Unit) {
                     FrequencyCard(
                         label = "Frequency",
                         selectedFrequency = selectedFrequency,
-                        onFrequencyClick = { showCategoryPicker = true }
+                        onFrequencyClick = { showFrequencyPicker = true }
                     )
                     //endregion
                     // region Service Active
@@ -388,193 +397,6 @@ private fun OutlinedIconButton(
         contentAlignment = Alignment.Center
     ) {
         content()
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerBottomSheet(
-    initialMonth: Int = 9, // September
-    initialDay: Int = 17,
-    initialYear: Int = 2021,
-    onDateSelected: (month: Int, day: Int, year: Int) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var selectedMonth by remember { mutableStateOf(initialMonth) }
-    var selectedDay by remember { mutableStateOf(initialDay) }
-    var selectedYear by remember { mutableStateOf(initialYear) }
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = Color.White,
-        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
-        dragHandle = {
-            Box(
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .width(36.dp)
-                    .height(5.dp)
-                    .background(Color(0xFFE0E0E0), RoundedCornerShape(2.5.dp))
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
-        ) {
-            // Header
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 20.dp),
-                contentAlignment = Alignment.CenterStart // default alignment to start (left)
-            ) {
-                Text(
-                    text = "Start Date",
-                    modifier = Modifier.fillMaxWidth(),
-                    style = TextStyle(
-                        color = Color(0xFF212121),
-                        fontSize = 18.sp,
-                        lineHeight = 26.sp,
-                        letterSpacing = 0.sp,
-                        fontWeight = FontWeight.Medium,
-                    ),
-                    textAlign = TextAlign.Center
-                )
-                TextButton(
-                    onClick = {
-                        onDateSelected(selectedMonth, selectedDay, selectedYear)
-                        onDismiss()
-                    },
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                ) {
-                    Text(
-                        "Done",
-                        color = Color(0xFF0066FF),
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            }
-            // Date Picker Wheels
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-
-                WheelDatePicker(modifier = Modifier.fillMaxWidth()) { snappedDate ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        selectedMonth = snappedDate.monthValue
-                        selectedDay = snappedDate.dayOfMonth
-                        selectedYear = snappedDate.year
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-        }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FrequencyPickerBottomSheet(
-    selectedFrequency: String,
-    frequencySelected: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var frequency by remember { mutableStateOf(selectedFrequency) }
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = Color.White,
-        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
-        dragHandle = {
-            Box(
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .width(36.dp)
-                    .height(5.dp)
-                    .background(Color(0xFFE0E0E0), RoundedCornerShape(2.5.dp))
-            )
-        }
-    ) {
-        // Header
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 20.dp),
-            contentAlignment = Alignment.CenterStart // default alignment to start (left)
-        ) {
-            Text(
-                text = "Frequency",
-                modifier = Modifier.fillMaxWidth(),
-                style = TextStyle(
-                    color = Color(0xFF212121),
-                    fontSize = 18.sp,
-                    lineHeight = 26.sp,
-                    letterSpacing = 0.sp,
-                    fontWeight = FontWeight.Medium,
-                ),
-                textAlign = TextAlign.Center
-            )
-            TextButton(
-                onClick = {
-                    frequencySelected(frequency)
-                    onDismiss()
-                },
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) {
-                Text(
-                    "Done",
-                    color = Color(0xFF0066FF),
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        }
-
-        // Features List
-        FeatureRow(
-            label = "Weekly",
-            modifier = Modifier.clickable {
-                frequency = "Weekly"
-            },
-            isChecked = frequency == "Weekly"
-        )
-
-        Divider(
-            thickness = 1.dp,
-            color = Color(0xFFE3E6EB),
-            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-        )
-
-        FeatureRow(
-            label = "Monthly",
-            modifier = Modifier.clickable {
-                frequency = "Monthly"
-            },
-            isChecked = frequency == "Monthly"
-        )
-
-        Divider(
-            thickness = 1.dp,
-            color = Color(0xFFE3E6EB),
-            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-        )
-
-        FeatureRow(
-            label = "Annually",
-            modifier = Modifier.clickable {
-                frequency = "Annually"
-            },
-            isChecked = frequency == "Annually"
-        )
-
-        Spacer(Modifier.height(24.dp))
     }
 }
 

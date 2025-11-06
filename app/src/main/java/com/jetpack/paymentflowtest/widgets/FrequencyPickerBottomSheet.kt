@@ -37,22 +37,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jetpack.paymentflowtest.CommonCheckbox
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FrequencyPickerBottomSheet(
+    selectedFrequency: String,
     frequencySelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var frequency by remember { mutableStateOf("") }
+    var frequency by remember { mutableStateOf(selectedFrequency) }
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = Color.White,
@@ -107,7 +110,8 @@ fun FrequencyPickerBottomSheet(
             label = "Weekly",
             modifier = Modifier.clickable {
                 frequency = "Weekly"
-            }
+            },
+            isChecked = frequency == "Weekly"
         )
 
         Divider(
@@ -120,7 +124,8 @@ fun FrequencyPickerBottomSheet(
             label = "Monthly",
             modifier = Modifier.clickable {
                 frequency = "Monthly"
-            }
+            },
+            isChecked = frequency == "Monthly"
         )
 
         Divider(
@@ -133,7 +138,8 @@ fun FrequencyPickerBottomSheet(
             label = "Annually",
             modifier = Modifier.clickable {
                 frequency = "Annually"
-            }
+            },
+            isChecked = frequency == "Annually"
         )
 
         Spacer(Modifier.height(24.dp))
@@ -141,23 +147,50 @@ fun FrequencyPickerBottomSheet(
 }
 
 @Composable
-private fun FeatureRow(modifier: Modifier = Modifier, icon: Painter? = null, label: String) {
+fun FeatureRow(
+    isChecked: Boolean = false,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    label: String
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color(0xFF1C1E22),
-            modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            icon?.let {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFF2F4F7))
+                ) {
+                    Icon(
+                        it,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .align(Alignment.Center)
+                            .padding(5.dp),
+                        tint = Color(0xFF212121)
+                    )
+                }
+            }
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color(0xFF1C1E22),
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
+            )
+        }
         Box(
             modifier = Modifier.padding(end = 16.dp)
         ) {
             CommonCheckbox(
-                isChecked = true,
+                isChecked = isChecked,
             )
         }
     }
