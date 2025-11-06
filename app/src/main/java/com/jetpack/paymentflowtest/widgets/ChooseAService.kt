@@ -1,6 +1,8 @@
 package com.jetpack.paymentflowtest.widgets
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,14 +34,18 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun ChooseAService(
-    amount: String
+    selectedService: SubscriptionServiceItem?,
+    onTap: () -> Unit
 ) {
     val cardShape = RoundedCornerShape(16.dp)
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 90.dp),
+            .heightIn(min = 90.dp)
+            .clickable {
+                onTap()
+            },
         shape = cardShape,
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -50,23 +56,33 @@ fun ChooseAService(
                 .padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFEBEEFF)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    Icons.Rounded.Add,
-                    contentDescription = "Add Services",
-                    tint = Color(0xFF002FFF)
+            if (selectedService != null) {
+                Image(
+                    selectedService.icon,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .size(50.dp),
                 )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFEBEEFF)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Rounded.Add,
+                        contentDescription = "Add Services",
+                        tint = Color(0xFF002FFF)
+                    )
+                }
             }
             Spacer(Modifier.width(16.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    text = "Choose a service",
+                    text = selectedService?.name ?: "Choose a service",
                     style = TextStyle(
                         color = Color(0xFF98A2B3),
                         fontSize = 18.sp,
@@ -77,7 +93,7 @@ fun ChooseAService(
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = "$$amount",
+                    text = "$${selectedService?.price ?: '0'}",
                     style = TextStyle(
                         color = Color(0xFF636A79),
                         fontSize = 16.sp,

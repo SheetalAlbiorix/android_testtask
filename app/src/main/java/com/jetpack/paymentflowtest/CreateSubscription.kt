@@ -71,6 +71,8 @@ import com.jetpack.paymentflowtest.widgets.DatePickerCard
 import com.jetpack.paymentflowtest.widgets.FrequencyCard
 import com.jetpack.paymentflowtest.widgets.FrequencyPickerBottomSheet
 import com.jetpack.paymentflowtest.widgets.Header
+import com.jetpack.paymentflowtest.widgets.SubscriptionServiceBottomSheet
+import com.jetpack.paymentflowtest.widgets.SubscriptionServiceItem
 import java.util.Date
 
 @Composable
@@ -79,9 +81,7 @@ fun CreateSubscription(onClose: () -> Unit) {
 
     val cardShape = RoundedCornerShape(16.dp)
 
-    var serviceName by remember { mutableStateOf("") }
-    var serviceImage by remember { mutableStateOf("") }
-    var serviceAmount by remember { mutableStateOf("0") }
+    var selectedService by remember { mutableStateOf<SubscriptionServiceItem?>(null) }
 
     var selectedDate by remember { mutableStateOf(Date()) }
     var selectedFrequency by remember { mutableStateOf("") }
@@ -101,11 +101,13 @@ fun CreateSubscription(onClose: () -> Unit) {
     ) {
         Column(Modifier.fillMaxSize()) {
             Spacer(Modifier.height(56.dp))
-            Header(onClose = onClose)
+            Header(onClose = onClose, isServiceSelected = selectedService != null)
 
             Spacer(Modifier.height(20.dp))
 
-            ChooseAService(amount = serviceAmount)
+            ChooseAService(selectedService = selectedService, onTap = {
+                showServicePicker = true
+            })
 
             Spacer(Modifier.height(20.dp))
 
@@ -140,9 +142,13 @@ fun CreateSubscription(onClose: () -> Unit) {
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        Row {
+                        Row(
+                            modifier = Modifier.clickable {
+                                showServicePicker = true
+                            }
+                        ) {
                             Text(
-                                text = "Choose a service",
+                                text = selectedService?.name ?: "Choose a service",
                                 style = TextStyle(
                                     color = Color(0xFF98A2B3),
                                     fontSize = 16.sp,
@@ -187,7 +193,7 @@ fun CreateSubscription(onClose: () -> Unit) {
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "$0",
+                            text = "$${selectedService?.price ?: '0'}",
                             style = TextStyle(
                                 color = Color(0xFF212121),
                                 fontSize = 16.sp,
@@ -377,6 +383,16 @@ fun CreateSubscription(onClose: () -> Unit) {
                 selectedCategory = it
             },
             onDismiss = { showCategoryPicker = false }
+        )
+    }
+
+    if (showServicePicker) {
+        SubscriptionServiceBottomSheet(
+            subscriptionServiceItem = selectedService,
+            onSubscriptionServiceItem = {
+                selectedService = it
+            },
+            onDismiss = { showServicePicker = false }
         )
     }
 }

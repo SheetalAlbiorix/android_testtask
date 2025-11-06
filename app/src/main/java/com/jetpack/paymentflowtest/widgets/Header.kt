@@ -28,7 +28,8 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun Header(
-    onClose: () -> Unit = {}
+    isServiceSelected: Boolean = false,
+    onClose: () -> Unit = {},
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -61,12 +62,17 @@ fun Header(
         Text(
             text = "Save",
             style = TextStyle(
-                color = Color(0xFF98A2B3),
+                color = if (isServiceSelected) Color(0xFF002FFF) else Color(0xFF98A2B3),
                 fontSize = 18.sp,
                 lineHeight = 26.sp,
                 letterSpacing = 0.sp,
                 fontWeight = FontWeight.Medium,
             ),
+            modifier = Modifier.clickable {
+                if (isServiceSelected) {
+                    onClose()
+                }
+            },
         )
     }
 }
