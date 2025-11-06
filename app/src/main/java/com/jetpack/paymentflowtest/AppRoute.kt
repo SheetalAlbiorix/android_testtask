@@ -8,5 +8,5 @@ sealed interface AppRoute {
     data object Home : AppRoute
 
     @Serializable
-    data class ItemChooser(val chooserData: String = "") : AppRoute
+    data object CreateSubscription : AppRoute
 }

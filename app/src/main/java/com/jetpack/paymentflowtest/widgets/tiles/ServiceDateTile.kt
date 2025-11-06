@@ -1,6 +1,5 @@
-package com.jetpack.paymentflowtest.widgets
+package com.jetpack.paymentflowtest.widgets.tiles
 
-import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +26,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun DatePickerCard(
+fun ServiceDateTile(
     label: String = "Start Date",
     selectedDate: Date,
     onDateClick: () -> Unit

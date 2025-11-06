@@ -1,30 +1,20 @@
-package com.jetpack.paymentflowtest.widgets
+package com.jetpack.paymentflowtest.widgets.pickers
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -40,22 +30,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jetpack.paymentflowtest.CommonCheckbox
+import com.jetpack.paymentflowtest.widgets.CommonCheckbox
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FrequencyPickerBottomSheet(
+fun FrequencyPicker(
+    frequencies: List<String> = listOf("Weekly", "Monthly", "Yearly"),
     selectedFrequency: String,
     frequencySelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
     var frequency by remember { mutableStateOf(selectedFrequency) }
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = Color.White,
@@ -105,42 +96,25 @@ fun FrequencyPickerBottomSheet(
             }
         }
 
-        // Features List
-        FeatureRow(
-            label = "Weekly",
-            modifier = Modifier.clickable {
-                frequency = "Weekly"
-            },
-            isChecked = frequency == "Weekly"
-        )
+        // Dynamic Features List
+        frequencies.forEachIndexed { index, frequencyOption ->
+            FeatureRow(
+                label = frequencyOption,
+                modifier = Modifier.clickable {
+                    frequency = frequencyOption
+                },
+                isChecked = frequency == frequencyOption
+            )
 
-        Divider(
-            thickness = 1.dp,
-            color = Color(0xFFE3E6EB),
-            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-        )
-
-        FeatureRow(
-            label = "Monthly",
-            modifier = Modifier.clickable {
-                frequency = "Monthly"
-            },
-            isChecked = frequency == "Monthly"
-        )
-
-        Divider(
-            thickness = 1.dp,
-            color = Color(0xFFE3E6EB),
-            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-        )
-
-        FeatureRow(
-            label = "Annually",
-            modifier = Modifier.clickable {
-                frequency = "Annually"
-            },
-            isChecked = frequency == "Annually"
-        )
+            // Add divider between items, but not after the last item
+            if (index < frequencies.size - 1) {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = Color(0xFFE3E6EB),
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+                )
+            }
+        }
 
         Spacer(Modifier.height(24.dp))
     }
@@ -186,55 +160,11 @@ fun FeatureRow(
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
             )
         }
+
         Box(
             modifier = Modifier.padding(end = 16.dp)
         ) {
-            CommonCheckbox(
-                isChecked = isChecked,
-            )
-        }
-    }
-}
-
-@Composable
-private fun CommonCheckbox(
-    isChecked: Boolean,
-    size: Float = 24f,
-    uncheckedColor: Color = Color.Transparent,
-) {
-    val checkboxColor: Color by animateColorAsState(if (isChecked) Color(0xFF002FFF) else Color.White)
-    val density = LocalDensity.current
-    val duration = 200
-
-    Box(
-        modifier = Modifier
-            .size(size.dp)
-            .background(color = checkboxColor, shape = RoundedCornerShape(6.dp))
-            .heightIn(24.dp)
-            .border(
-                width = 1.5.dp,
-                color = Color(0xFF002FFF),
-                shape = CircleShape
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Column {
-            AnimatedVisibility(
-                visible = isChecked,
-                enter = slideInHorizontally(animationSpec = tween(duration)) {
-                    with(density) { (size * -0.5).dp.roundToPx() }
-                } + expandHorizontally(
-                    expandFrom = Alignment.Start,
-                    animationSpec = tween(duration)
-                ),
-            ) {
-                Icon(
-                    Icons.Rounded.Check,
-                    contentDescription = null,
-                    tint = if (isChecked) Color.White else Color(0xFF002FFF),
-                    modifier = Modifier.size(18.dp)
-                )
-            }
+            CommonCheckbox(isChecked = isChecked)
         }
     }
 }

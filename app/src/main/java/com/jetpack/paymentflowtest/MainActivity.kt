@@ -8,6 +8,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.jetpack.paymentflowtest.pages.CreateSubscriptionPage
+import com.jetpack.paymentflowtest.pages.HomePage
 import com.jetpack.paymentflowtest.ui.theme.PaymentFlowTestTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,9 +25,18 @@ class MainActivity : ComponentActivity() {
                     startDestination = AppRoute.Home,
                 ) {
                     composable<AppRoute.Home> {
-                        CreateSubscription({
-
-                        })
+                        HomePage(
+                            onCreateSubscriptionClick = {
+                                navController.navigate(AppRoute.CreateSubscription)
+                            }
+                        )
+                    }
+                    composable<AppRoute.CreateSubscription> {
+                        CreateSubscriptionPage(
+                            onClose = {
+                                navController.popBackStack()
+                            }
+                        )
                     }
                 }
             }

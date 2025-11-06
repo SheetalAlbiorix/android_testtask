@@ -1,4 +1,4 @@
-package com.jetpack.paymentflowtest.widgets
+package com.jetpack.paymentflowtest.widgets.tiles
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun FrequencyCard(
+fun ServiceFrequencyTile(
     label: String = "Frequency",
     selectedFrequency: String,
     onFrequencyClick: () -> Unit
