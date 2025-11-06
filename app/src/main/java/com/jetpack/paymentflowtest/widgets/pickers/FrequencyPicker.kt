@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jetpack.paymentflowtest.widgets.CommonCheckbox
+import com.jetpack.paymentflowtest.widgets.Selector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -164,7 +164,7 @@ fun FeatureRow(
         Box(
             modifier = Modifier.padding(end = 16.dp)
         ) {
-            CommonCheckbox(isChecked = isChecked)
+            Selector(isChecked = isChecked)
         }
     }
 }

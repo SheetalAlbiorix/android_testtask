@@ -23,10 +23,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CommonCheckbox(
+fun Selector(
     isChecked: Boolean,
     size: Float = 24f,
-    uncheckedColor: Color = Color.Transparent,
 ) {
     val checkboxColor: Color by animateColorAsState(if (isChecked) Color(0xFF002FFF) else Color.White)
     val density = LocalDensity.current

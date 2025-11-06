@@ -14,41 +14,36 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.jetpack.paymentflowtest.ui.theme.TextPlaceholder
+import com.jetpack.paymentflowtest.ui.theme.TextSecondary
+import com.jetpack.paymentflowtest.widgets.pickers.ServiceItem
 
 @Composable
 fun ChooseAService(
-    selectedService: SubscriptionServiceItem?,
+    selectedService: ServiceItem?,
     onTap: () -> Unit
 ) {
-    val cardShape = RoundedCornerShape(16.dp)
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 90.dp)
-            .clickable {
-                onTap()
-            },
-        shape = cardShape,
+            .clickable { onTap() },
+        shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             Modifier
@@ -69,13 +64,13 @@ fun ChooseAService(
                     modifier = Modifier
                         .size(50.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFEBEEFF)),
+                        .background(MaterialTheme.colorScheme.secondary),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         Icons.Rounded.Add,
                         contentDescription = "Add Services",
-                        tint = Color(0xFF002FFF)
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -83,24 +78,14 @@ fun ChooseAService(
             Column(Modifier.weight(1f)) {
                 Text(
                     text = selectedService?.name ?: "Choose a service",
-                    style = TextStyle(
-                        color = Color(0xFF98A2B3),
-                        fontSize = 18.sp,
-                        lineHeight = 26.sp,
-                        letterSpacing = 0.sp,
-                        fontWeight = FontWeight.W400,
-                    ),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = TextPlaceholder
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
                     text = "$${selectedService?.price ?: '0'}",
-                    style = TextStyle(
-                        color = Color(0xFF636A79),
-                        fontSize = 16.sp,
-                        lineHeight = 22.sp,
-                        letterSpacing = 0.sp,
-                        fontWeight = FontWeight.W400,
-                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

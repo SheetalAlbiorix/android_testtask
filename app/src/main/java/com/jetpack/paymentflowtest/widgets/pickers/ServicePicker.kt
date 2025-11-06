@@ -1,4 +1,4 @@
-package com.jetpack.paymentflowtest.widgets
+package com.jetpack.paymentflowtest.widgets.pickers
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -49,9 +49,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jetpack.paymentflowtest.R
+import com.jetpack.paymentflowtest.widgets.Selector
 import kotlinx.coroutines.launch
 
-data class SubscriptionServiceItem(
+data class ServiceItem(
     val name: String,
     val price: Double,
     val icon: Painter
@@ -59,41 +60,41 @@ data class SubscriptionServiceItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubscriptionServiceBottomSheet(
-    subscriptionServiceItem: SubscriptionServiceItem?,
-    onSubscriptionServiceItem: (SubscriptionServiceItem?) -> Unit,
+fun ServicePicker(
+    serviceItem: ServiceItem?,
+    onServiceItem: (ServiceItem?) -> Unit,
     onDismiss: () -> Unit
 ) {
 
-    var selectedSubscriptionServiceItem by remember { mutableStateOf(subscriptionServiceItem) }
+    var selectedSubscriptionServiceItem by remember { mutableStateOf(serviceItem) }
     var query by remember { mutableStateOf("") }
     val subscriptionServiceList = listOf(
-        SubscriptionServiceItem(
+        ServiceItem(
             name = "Netflix",
             price = 15.0,
             icon = painterResource(R.drawable.netflix)
         ),
-        SubscriptionServiceItem(
+        ServiceItem(
             name = "Hulu",
             price = 12.99,
             icon = painterResource(R.drawable.hulu)
         ),
-        SubscriptionServiceItem(
+        ServiceItem(
             name = "Spotify",
             price = 9.99,
             icon = painterResource(R.drawable.spotify)
         ),
-        SubscriptionServiceItem(
+        ServiceItem(
             name = "PlayStation+",
             price = 14.99,
             icon = painterResource(R.drawable.playstation)
         ),
-        SubscriptionServiceItem(
+        ServiceItem(
             name = "Paramount+",
             price = 9.99,
             icon = painterResource(R.drawable.paramount)
         ),
-        SubscriptionServiceItem(
+        ServiceItem(
             name = "YouTube Music",
             price = 10.99,
             icon = painterResource(R.drawable.youtube)
@@ -149,7 +150,7 @@ fun SubscriptionServiceBottomSheet(
             )
             TextButton(
                 onClick = {
-                    onSubscriptionServiceItem(selectedSubscriptionServiceItem)
+                    onServiceItem(selectedSubscriptionServiceItem)
                     onDismiss()
                 },
                 modifier = Modifier.align(Alignment.CenterEnd)
@@ -252,7 +253,7 @@ private fun SubscriptionServiceItemRow(
         Box(
             modifier = Modifier.padding(end = 16.dp)
         ) {
-            CommonCheckbox(
+            Selector(
                 isChecked = isChecked,
             )
         }

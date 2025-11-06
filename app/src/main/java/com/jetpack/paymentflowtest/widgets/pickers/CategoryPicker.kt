@@ -44,7 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jetpack.paymentflowtest.widgets.CommonCheckbox
+import com.jetpack.paymentflowtest.widgets.Selector
 
 data class CategoryItem(
     val imageVector: ImageVector,
@@ -186,7 +186,7 @@ private fun CategoryRow(
         Box(
             modifier = Modifier.padding(end = 16.dp)
         ) {
-            CommonCheckbox(isChecked = isChecked)
+            Selector(isChecked = isChecked)
         }
     }
 }
