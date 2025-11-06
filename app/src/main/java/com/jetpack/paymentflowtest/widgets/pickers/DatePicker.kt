@@ -1,4 +1,4 @@
-package com.jetpack.paymentflowtest.widgets
+package com.jetpack.paymentflowtest.widgets.pickers
 
 import android.os.Build
 import androidx.compose.foundation.background
@@ -35,14 +35,12 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerBottomSheet(
+fun DatePicker(
     currentDate: Date = Date(),
     onDateSelected: (Date) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val calendar = Calendar.getInstance().apply {
-        time = currentDate
-    }
+    val calendar = Calendar.getInstance().apply { time = currentDate }
 
     var selectedMonth by remember { mutableStateOf(calendar.get(Calendar.MONTH) + 1) }
     var selectedDay by remember { mutableStateOf(calendar.get(Calendar.DAY_OF_MONTH)) }
@@ -102,6 +100,7 @@ fun DatePickerBottomSheet(
                     )
                 }
             }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -116,6 +115,7 @@ fun DatePickerBottomSheet(
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
