@@ -69,7 +69,7 @@ fun CreateSubscriptionPage(onClose: () -> Unit) {
                     onClick = { showServicePicker = true },
                 )
 
-                ServiceAmountTile(amount = "$${selectedService?.price ?: '0'}")
+                ServiceAmountTile(amount = "${selectedService?.price ?: '0'}")
 
                 ServiceCategoryTile(
                     selectedCategory = selectedCategory,
