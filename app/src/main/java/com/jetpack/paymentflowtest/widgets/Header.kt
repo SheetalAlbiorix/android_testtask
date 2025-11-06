@@ -68,10 +68,10 @@ fun Header(
                 letterSpacing = 0.sp,
                 fontWeight = FontWeight.Medium,
             ),
-            modifier = Modifier.clickable {
-                if (isServiceSelected) {
-                    onClose()
-                }
+            modifier = Modifier.clickable(
+                enabled = isServiceSelected
+            ) {
+                onClose()
             },
         )
     }
