@@ -4,7 +4,7 @@ A modern Android application built with Jetpack compose.
 
 ## :movie_camera: Demo
 
-[Watch the app demo video](https://github.com/SheetalAlbiorix/iOS_test_task/blob/main/ChargebackUI.mp4)
+[Watch the app demo video]()
 > Click the link above to see the app in action! The video showcases the complete user flow from
 > service selection to subscription creation.
 
